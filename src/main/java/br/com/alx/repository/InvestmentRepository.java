@@ -14,6 +14,7 @@ import java.util.List;
 import static br.com.alx.repository.CommonsRepository.checkFundsForTransaction;
 
 public class InvestmentRepository {
+    
     private long nextId;
     private final List<Investment> investments = new ArrayList<>();
     private final List<InvestmentWallet> wallets = new ArrayList<>();
@@ -57,8 +58,8 @@ public class InvestmentRepository {
         return wallet;
     }
 
-    public void updateAmount(final long percent){
-        wallets.forEach(w -> w.updateAmount(percent));
+    public void updateAmount(){
+        wallets.forEach(w -> w.updateAmount(w.getInvestment().getTax()));
     }
 
     public Investment findById(final long id){
