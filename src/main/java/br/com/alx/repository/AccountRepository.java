@@ -1,6 +1,7 @@
 package br.com.alx.repository;
 
 import br.com.alx.exception.AccountNotFoundException;
+import br.com.alx.exception.PixInUseException;
 import br.com.alx.model.AccountWallet;
 
 import java.util.List;
@@ -12,6 +13,12 @@ public class AccountRepository {
     private List<AccountWallet> accounts;
 
     public AccountWallet create(final List<String> pix, final long initialFunds){
+        var pixInUse = accounts.stream().flatMap(a -> a.getPix().stream()).toList();
+        for (var p: pix){
+            if(pixInUse.contains(p)){
+                throw new PixInUseException("O PIX '" + p + "' já está em uso.");
+            }
+        }
         var newAccount = new AccountWallet(initialFunds, pix);
         accounts.add(newAccount);
         return newAccount;
@@ -36,6 +43,7 @@ public class AccountRepository {
         var message = "pix enviado de '" + sourcePix + "' para '" + targetPix + " '";
         target.addMoney(source.reduceMoney(amount), source.getService(), message);
     }
+
     public AccountWallet findByPix(final String pix){
         return accounts.stream()
                 .filter(a -> a.getPix().contains(pix))
