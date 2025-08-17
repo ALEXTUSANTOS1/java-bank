@@ -15,7 +15,7 @@ import static br.com.alx.repository.CommonsRepository.checkFundsForTransaction;
 
 public class InvestmentRepository {
     
-    private long nextId;
+    private long nextId = 0;
     private final List<Investment> investments = new ArrayList<>();
     private final List<InvestmentWallet> wallets = new ArrayList<>();
 
@@ -29,10 +29,12 @@ public class InvestmentRepository {
     }
 
     public InvestmentWallet initInvestment(final AccountWallet account, final long id){
-        var accountInUse = wallets.stream().map(InvestmentWallet::getAccount).toList();
-        if(accountInUse.contains(account)){
+        if(!wallets.isEmpty()) {
+            var accountInUse = wallets.stream().map(InvestmentWallet::getAccount).toList();
+            if (accountInUse.contains(account)) {
                 throw new AccountWithInvestmentException("A conta com o PIX " + account + " já possui um investimento ativo.");
             }
+        }
 
 
         var investment = findById(id);

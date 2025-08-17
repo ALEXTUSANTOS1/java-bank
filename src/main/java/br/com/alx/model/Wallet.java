@@ -39,6 +39,9 @@ public abstract class Wallet {
     }
 
     public List<Money> reduceMoney(final long amount){
+        if (amount <= 0) {
+            throw new IllegalArgumentException("O valor deve ser positivo.");
+        }
         List<Money> toRemove = new ArrayList<>();
         for(int i = 0; i < amount; i++){
             toRemove.add(this.money.removeFirst());
@@ -48,5 +51,11 @@ public abstract class Wallet {
 
     public List<MoneyAudit> getFinancialTransactions(){
         return money.stream().flatMap(m -> m.getHistory().stream()).toList();
+    }
+
+    @Override
+    public String toString() {
+        double valor = money.size() / 100.0;
+        return String.format("Wallet{service=%s, money=R$%.2f}", service, valor);
     }
 }

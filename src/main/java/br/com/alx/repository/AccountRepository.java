@@ -3,20 +3,27 @@ package br.com.alx.repository;
 import br.com.alx.exception.AccountNotFoundException;
 import br.com.alx.exception.PixInUseException;
 import br.com.alx.model.AccountWallet;
+import br.com.alx.model.Transaction;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static br.com.alx.repository.CommonsRepository.checkFundsForTransaction;
 
 public class AccountRepository {
 
-    private List<AccountWallet> accounts;
+    private final List<AccountWallet> accounts = new ArrayList<>();
 
     public AccountWallet create(final List<String> pix, final long initialFunds){
-        var pixInUse = accounts.stream().flatMap(a -> a.getPix().stream()).toList();
-        for (var p: pix){
-            if(pixInUse.contains(p)){
-                throw new PixInUseException("O PIX '" + p + "' já está em uso.");
+        if(!accounts.isEmpty()) {
+            var pixInUse = accounts.stream().flatMap(a -> a.getPix().stream()).toList();
+            for (var p : pix) {
+                if (pixInUse.contains(p)) {
+                    throw new PixInUseException("O PIX '" + p + "' já está em uso.");
+                }
             }
         }
         var newAccount = new AccountWallet(initialFunds, pix);
@@ -53,5 +60,13 @@ public class AccountRepository {
 
     public List<AccountWallet> list(){
         return this.accounts;
+    }
+
+    public Map<LocalDateTime, List<Transaction>> getHistory(String pix) throws AccountNotFoundException {
+        AccountWallet wallet = findByPix(pix);
+        if (wallet == null) {
+            throw new AccountNotFoundException("Conta não encontrada para a chave pix: " + pix);
+        }
+        return new LinkedHashMap<>();
     }
 }
